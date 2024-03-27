@@ -1,12 +1,15 @@
 from flask import Flask, render_template, request, redirect
 from pymysql import connections
 import boto3
+from dotenv import load_dotenv
+import os
 
 app = Flask(__name__)
 
 # Specify your AWS credentials
-aws_access_key_id = 'AKIAXYKJTNYMMGEVGBEK'
-aws_secret_access_key = 'nSWHDfgMUBZhR0lXYn6wXSO67KHA4LUW5afIl+9O'
+load_dotenv()
+aws_access_key_id = os.getenv('access_key')
+aws_secret_access_key = os.getenv('secret_key')
 
 session = boto3.Session(
     aws_access_key_id=aws_access_key_id,
