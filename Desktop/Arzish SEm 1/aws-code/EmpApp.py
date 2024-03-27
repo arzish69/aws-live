@@ -8,12 +8,9 @@ app = Flask(__name__)
 
 # Specify your AWS credentials
 load_dotenv()
-aws_access_key_id = os.getenv('access_key')
-aws_secret_access_key = os.getenv('secret_key')
-
 session = boto3.Session(
-    aws_access_key_id=aws_access_key_id,
-    aws_secret_access_key=aws_secret_access_key
+    aws_access_key_id = os.getenv('access_key'),
+    aws_secret_access_key= os.getenv('secret_key')
 )
 
 BUCKET_NAME = 'addempimg'
