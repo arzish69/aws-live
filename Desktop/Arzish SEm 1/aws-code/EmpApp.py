@@ -124,4 +124,5 @@ def AddEmp():
     print("All modifications done...")
     return render_template('AddEmpOutput.html', name=emp_name)
 
-app.run(debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=80, debug=True)
