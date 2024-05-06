@@ -1,6 +1,0 @@
-customhost = "database.c3o8uuyq6j6l.eu-north-1.rds.amazonaws.com"
-customuser = "admin"
-custompass = "admin123"
-customdb = "database"
-custombucket = "addempimg"
-customregion = "eu-north-1"

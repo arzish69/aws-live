@@ -1,18 +1,36 @@
 from flask import Flask, render_template, request, redirect
-from pymysql import connections
+from pymysql import connections, IntegrityError
 import boto3
+from botocore.exceptions import ClientError
+import base64
 
 app = Flask(__name__)
+s3_client = boto3.client(
+        's3',
+        aws_access_key_id='AKIAXYKJTNYMMGEVGBEK',
+        aws_secret_access_key='nSWHDfgMUBZhR0lXYn6wXSO67KHA4LUW5afIl+9O'
+    )
 
-# Specify your AWS credentials
-session = boto3.Session(
-    aws_access_key_id = 'AKIAXYKJTNYMMGEVGBEK',
-    aws_secret_access_key= 'nSWHDfgMUBZhR0lXYn6wXSO67KHA4LUW5afIl+9O'
-)
+def retrieve_image_from_s3(s3_client, bucket_name, key):
+    try:
+        # Get the image object from S3
+        response = s3_client.get_object(Bucket=bucket_name, Key=key)
+        
+        # Read and encode the image data as base64
+        image_data = response['Body'].read()
+        encoded_image = base64.b64encode(image_data).decode('utf-8')
+        
+        # Check if the image is PNG format
+        if key.endswith('.png'):
+            return encoded_image
+        else:
+            print("Error: Image format is not PNG.")
+            return None
 
-BUCKET_NAME = 'addempimg'
-region = "eu-north-1"
-s3_client = session.client('s3')
+    except ClientError as e:
+        # Handle any errors (e.g., image not found)
+        print(f"Error retrieving image from S3: {e}")
+        return None
 
 db_conn = connections.Connection(
     host="doctor.c3o8uuyq6j6l.eu-north-1.rds.amazonaws.com",
@@ -20,7 +38,6 @@ db_conn = connections.Connection(
     user="admin",
     password="admin123",
     db="doctor"
-
 )
 
 try:
@@ -33,15 +50,6 @@ except Exception as e:
 
 output = {}
 table = 'doctor'
-
-def upload_to_s3(file):
-    s3 = boto3.client('s3')
-    try:
-        s3.upload_fileobj(file, BUCKET_NAME, file.filename)
-        return True
-    except Exception as e:
-        print(f'Error uploading file to S3: {str(e)}')
-        return False
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
@@ -71,10 +79,11 @@ def fetching():
                 last_name = result[2]
                 pri_skill = result[3]
                 location = result[4]
+                image_png = retrieve_image_from_s3(s3_client,'addempimg',f'{employ_no}.png')
 
                 return render_template('GetEmpOutput.html', id=employ_no, fname=first_name,
                                        lname=last_name, interest=pri_skill,
-                                       location=location)
+                                       location=location,image_png=image_png)
             else:
                 return render_template('NoFetchOut.html', id=emp_id)
 
@@ -107,10 +116,14 @@ def AddEmp():
 
         # Upload file to S3
         try:
-            s3_client.upload_fileobj(emp_image_file, BUCKET_NAME, emp_image_file.filename)
+            s3_client.upload_fileobj(emp_image_file, 'addempimg', emp_image_file.filename)
             print('File uploaded successfully')
         except Exception as e:
             return f'Error uploading file: {str(e)}'
+
+    except IntegrityError as ie:
+        db_conn.rollback()  # Rollback the transaction
+        return render_template('Dupe.html')  # Render a template for duplicate emp_id error
 
     except Exception as e:
         return str(e)

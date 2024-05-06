@@ -1,37 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Employee Information</title>
+    <title>Employee Information</title>
+    <style>
+        body {
+            background-color: lightgrey;
+            font-family: avenir;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 800px; /* Adjust the maximum width as needed */
+            margin: 0 auto; /* Center the container */
+        }
+        .employee-info {
+            text-align: left;
+            margin-right: 10px; /* Adjust the margin between the info and the image */
+        }
+
+        .employee-image {
+            max-width: 100px; /* Adjust the maximum width of the image */
+            max-height: 100px; /* Adjust the maximum height of the image */
+            height: auto;
+            margin-left: auto; /* Automatically adjust left margin */
+            margin-right: auto; /* Automatically adjust right margin */
+            display: block; /* Make the image a block element to center it */
+        }
+    </style>
 </head>
-<center>
-	<font color="black" size="5" style="font-family: avenir">
+<body>
+    <div class="container">
+        <div class="employee-info">
+            <h1 style="color: DodgerBlue">Employee Information</h1>
+            <p><strong>Employee ID:</strong> {{ id }}</p>
+            <p><strong>First Name:</strong> {{ fname }}</p>
+            <p><strong>Last Name:</strong> {{ lname }}</p>
+            <p><strong>Primary Interest:</strong> {{ interest }}</p>
+            <p><strong>Location:</strong> {{ location }}</p>
+            <form>
+                <button type="submit" style="background: white; height: 45px; width: 200px; color:black; font:oblique;" formaction="/">GO TO UPDATE DATABASE PAGE</button>
+            </form>
+        </div>
+        <div class="employee-image">
+            <img src="data:image/png;base64,{{image_png}}" alt="S3 Image">
 
-		<h1 style="color: DodgerBlue">Employee Information</h1>
-
-		<body bgcolor="lightgrey">
-
-			<form>
-
-				<div>
-
-			  		Employee ID:<br> {{ id }} <br><br>
-
-			  		First Name:<br> {{ fname }} <br><br>
-
-			  		Last Name:<br> {{ lname }} <br><br>
-
-			  		Primary Interest:<br> {{ interest }} <br><br>
-
-			  		Location:<br> {{ location }} <br><br>
-
-			  		<button type="submit" style="background: white; height: 45px; width: 200px; color:black; font:oblique;" formaction="/">GO TO UPDATE DATABASE PAGE</button><br><br>
-
-			  	</div>
-
-			</form>
-
-		</body>
-
-	</font>
-</center>
+        </div>
+    </div>
+</body>
 </html>
